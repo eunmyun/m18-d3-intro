@@ -1,24 +1,7 @@
-# Module 7: Introduction to D3.js
+# Introduction to D3.js
 
-## Overview
 D3 is the leading JavaScript library for building interactive charts on the web. However, even though we'll use D3 to build charts, it's **not**  a _"charting library"_: it's a **DOM manipulation library** optimized for working with data. The "charts" you make are up to you - you want a bar chart? Make some rectangles. A scatter-plot? Put some circles on the DOM. D3 will provide you with a robust set of tools for translating between data properties and visual properties: the rest is up to you. The module focuses on how to leverage the D3 library to create visual elements from your data. Once you understand how to drive a graphical layout with data, picking up the rest of the library will be (comparatively) trivial.
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Contents**
-
-- [Resources](#resources)
-- [Introductory Methods](#introductory-methods)
-- [From Data to DOM](#from-data-to-dom)
-  - [Challenge](#challenge)
-  - [Solution](#solution)
-    - [Selections](#selections)
-    - [The Data Join](#the-data-join)
-  - [Implications](#implications)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Resources
 The open source community has generated a plethora of D3 resources: here are a few that I believe help capture the core concepts that you need to understand to harness the power of the library.
 
 - [Thinking with Joins](https://bost.ocks.org/mike/join/) _(Bostock)_
@@ -57,7 +40,7 @@ d3.select('svg') // selects the element by element type, returns the first svg
   .style('opacity', .5); // sets the opacity, and terminates the chain with a semi-colon
 ```
 
-**Make sure not to interrupt your chain with the `;`**. For practice getting/setting values of attributes/styles, and appending elements to the page, see [exercise-1](exercise-1).
+**Make sure not to interrupt your chain with the `;`**. For practice getting/setting values of attributes/styles, and appending elements to the page, see [exercise-1](http://github.com/info474-s17/m12-d3-intro/tree/master/exercise-1).
 
 ## From Data to DOM
 In order to properly leverage the power of D3, you must understand how it binds data to visual properties. Many of the [resources](#resources) above were selected because of their clear explanations of the core D3 methods. I **strongly suggest** you use them as a supplement to the sections below. The following sections explain the [challenge](#challenge) D3 is designed to address, the [solution](#solution) to the challenge, and the [implications](#implications) of the implementation.
@@ -65,13 +48,13 @@ In order to properly leverage the power of D3, you must understand how it binds 
 ### Challenge
 Almost all new D3 users find themselves asking the same question -- _why is it so challenging to make a simple chart_? As stated above, D3 is built to bind data to visual properties, not make out of the box charts (there are [plenty of other libraries](https://en.wikipedia.org/wiki/Comparison_of_JavaScript_charting_frameworks) for that). Challenging developers/designers to build charts from scratch forces them to truly engage in the practice of visualization - encoding data with visual properties. D3 provides an API for encoding data with visual properties like position, length, angle, color, area, and others. So the first question is, **how do we move from data to visual _elements_?**
 
-![image of data to visual elements](imgs/data-to-dom.png)
+![image of data to visual elements](m12-imgs/data-to-dom.png)
 
 You already know that each visual element needs to be represented in the DOM, and the jQuery and D3 libraries provide you with a syntax for manipulating the DOM. Unfortunately, jQuery [lacks a clear approach](http://stackoverflow.com/questions/3642035/jquerys-append-not-working-with-svg-element) for manipulating the visual properties of `svg` elements. However, using the syntax introduced in the section above, you could easily solve this problem by using D3's `.append` method for a series of elements (explained below).
 
 The second question then becomes, **how do we move from data to visual _encodings_?** We'll need an approach for specifying the relationship between _data attributes_ and _visual attributes_:
 
-![image of data to visual elements](imgs/visual-encoding.png)
+![image of data to visual elements](m12-imgs/visual-encoding.png)
 
 Using the `.attr` method described above, you can use each object's data to define visual attributes. Here is a **very non-D3 way** to use D3 to accomplish our goal thus far:
 
@@ -125,7 +108,7 @@ d3.selectAll('circle.point');
 ```
 This will allow us to **select** the DOM elements that we want to associate with our data. The confusing part is, the first time data is bound to visual elements, you will _**bind your data to an empty selection**_:
 
-![image of empty circle selection](imgs/empty-selection.png)
+![image of empty circle selection](m12-imgs/empty-selection.png)
 
 While it may seem strange, this makes sense because the initial time that your dataset is associated with elements on the DOM, all elements need to be added. In the section below, keep in mind that you're binding your data to a selection of elements within an svg, _not_ to the svg itself.
 
@@ -133,7 +116,7 @@ While it may seem strange, this makes sense because the initial time that your d
 The true magic of D3 is the set of methods used for associating data with visual elements. To start our own lesson on [Thinking with Joins](https://bost.ocks.org/mike/join/), let's assume that you want to associate each element in your dataset with a `<circle>` in your DOM. You'll need to begin by making a selection of all `<circle>` elements within an `<svg>` element, as seen above. This is the `<svg>` in which you want to render the circles. As you suspect, **this selection will be empty** at first. We then need to declare that this selection of circles is associated with an underlying data structure, which we'll do by using the `.data` method. Whereas we were able to add `<circle>` elements to the DOM in the above example, the relationship between each circle and each piece of data was not specified. Here, we associate each element in the array with an element in the DOM and **keep track of that relationship**. We'll refer to this as the _data-join_:
 
 
-![image of the data join](imgs/data-join.png)
+![image of the data join](m12-imgs/data-join.png)
 
 To perform a _data join_ between your data array and the array of selected elements, you'll use the `.data` method, which allows you to specify an **array of data** and a `key` function that explicitly specifies a unique identifier to associate each piece of data with a DOM element (by default, position in the array is used as the identifier, which can get messy). For example:
 
@@ -158,19 +141,19 @@ By default, the `.data` method returns **the elements present in both the data a
 
 >**data**: This method performs the data-join between your dataset and the elements in the DOM. It will return an array of nodes for items present in your data array that are also represented in the DOM. You can then manipulate these nodes, or leverage the `enter` and `exit` methods to determine the imbalances in the relationship between your data and your DOM ([docs](https://github.com/mbostock/d3/wiki/Selections#wiki-data)):
 
-![image of data method](imgs/data-method.png)
+![image of data method](m12-imgs/data-method.png)
 
 >**enter**: This method returns an array of (placeholder) nodes for items present in your data array that are not (yet) in the DOM. You will use `enter` when adding new elements to the DOM. This method is only accessible on the selection returned by the `.data` operator ([docs](https://github.com/mbostock/d3/wiki/Selections#enter)):
 
-![image of enter method](imgs/enter-method.png)
+![image of enter method](m12-imgs/enter-method.png)
 
 >**exit**: This method returns an array of nodes present in your DOM that are no longer in the data array. You will use `exit` when removing elements from the DOM.This method is only accessible on the selection returned by the `.data` operator ([docs](https://github.com/mbostock/d3/wiki/Selections#exit)):
 
-![image of exit method](imgs/exit-method.png)
+![image of exit method](m12-imgs/exit-method.png)
 
 To continue the (seemingly simple) task of adding circles to the screen, we would use the `.enter` method to determine which elements in our data array are not represented on the screen. For each element, we could then use the `.append` method to add a circle and specify attributes using the `.attr` method:
 
- ```javascript
+```javascript
 // Continuing with the above example `data` and selected `svg` element
 svg.selectAll('circle') // select all circles in the svg
   .data(data, function(d){return d.id}) // bind data to your selection
@@ -179,7 +162,7 @@ svg.selectAll('circle') // select all circles in the svg
   .attr('r', 5) // set a constant radius of 5
   .attr('cx', function(d) {return d.x}) // specify the x attribute
   .attr('cy', function(d) {return d.y}); // specify the y attribute  
- ```
+```
 
 You'll notice that in the example above, an anonymous function is used to specify the `cx` and `cy` attributes. These functions take in a parameter `d`, which sequentially takes on the value of each element in the `data` array. So, for the first circle, `d` is `{id:1, x:10, y:10}`, so the object properties can be used to specify visual properties (**which is the whole point of the D3 library!**).
 
@@ -232,9 +215,9 @@ svg.selectAll('circle') // select all circles in the svg
 
 While this may be a complex solution to the challenges outlined above, it provides you with precise control over the relationship between your data and the DOM elements you create. Here is how these methods fit together when transitioning between two data states:
 
-![animation showing enter exit and update methods](imgs/data-transition.gif)
+![animation showing enter exit and update methods](m12-imgs/data-transition.gif)
 
-For practice exploring the data-join, see [exercise-2](exercise-2).
+For practice exploring the data-join, see [exercise-2](http://github.com/info474-s17/m12-d3-intro/tree/master/exercise-2).
 
 ### Implications
 While the above section introduced how D3 provides a set of tools that enable establishing and maintaining the relationship between a data structure and the DOM, this section describes some initial approaches for implementation. There are a few lessons derived from the affordances and limitations of the data-join process:
@@ -299,4 +282,4 @@ var draw = function(data) {
 ```
 This approach will be the basis of more involved reusability patterns in the future. While D3 has a robust set of functionality, the lessons in this module represent the core process you'll need to understand to build your visualizations.
 
-For practice using this pattern, see [exercise-3](exercise-3).
+For practice using this pattern, see [exercise-3](http://github.com/info474-s17/m12-d3-intro/tree/master/exercise-3).
