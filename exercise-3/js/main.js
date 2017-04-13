@@ -26,9 +26,12 @@ var exam3 = [
 // You'll have to wait for you page to load to assign events to the elements created in your index.html file
 $(function() {
   // Select SVG
+  var svg = d3.select('#my-svg');
 
   // Reusable draw function
-
+  var draw = function() {
+    
+  }
     // Bind data to selection of rects in your svg
 
 
